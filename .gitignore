@@ -1,0 +1,10 @@
+oss-cad-suite/
+__pycache__/
+sim_build/
+results.xml
+wave_output.vcd
+
+test_fpga.hex
+6502.json
+ulx3s.bit
+ulx3s_out.config
