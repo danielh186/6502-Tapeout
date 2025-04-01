@@ -1,0 +1,738 @@
+; ########## 6502 Assembly Test Code ##########
+;  Memory Map:
+; $0000–$00FF = Zero Page
+; $0100–$01FF = Stack
+; $FFFA–$FFFB = NMI Vector
+; $FFFC–$FFFD = Reset Vector
+; $FFFE–$FFFF = IRQ/BRK Vector
+
+; *=$0000   ; Start address in RAM (change as needed)
+; .WORD $0000
+
+
+.ORG $FFFA ; Interrupt Vectors
+    .WORD NMI
+    .WORD RESET
+    .WORD IRQ
+
+.ORG $0000 ; Zero Page
+    ZP_CONST1: .BYTE $00
+    ZP_CONST2: .BYTE $01
+    ZP_CONST3: .BYTE $FF
+    ZP_CONST4: .BYTE %10000000 ; 0x80 -> test negative flag
+    ; Additional test constants
+    ZP_CONST5: .BYTE 0d5
+    ZP_CONST6: .BYTE 0d7
+    ZP_CONST7: .BYTE 0d10
+    ZP_CONST8: .BYTE 0d50
+    ZP_CONST9: .BYTE 0d128
+    ZP_CONST10: .BYTE 0d230
+
+    ZP_VAR1: .BYTE $00
+    ZP_VAR2: .BYTE $00
+    ZP_VAR3: .BYTE $00
+    ZP_VAR4: .BYTE $00
+    ZP_VAR5: .BYTE $00
+    ZP_VAR6: .BYTE $00
+    ZP_VAR7: .BYTE $00
+    ZP_VAR8: .BYTE $00
+    ZP_VAR9: .BYTE $00
+    ZP_VAR10: .BYTE $00
+
+    ZP_CONST1_PTR: .WORD ZP_CONST1
+    ZP_CONST2_PTR: .WORD ZP_CONST2
+    ZP_CONST3_PTR: .WORD ZP_CONST3
+    ZP_CONST4_PTR: .WORD ZP_CONST4
+    ; Additional test constants
+    ZP_CONST5_PTR: .WORD ZP_CONST5
+    ZP_CONST6_PTR: .WORD ZP_CONST6
+    ZP_CONST7_PTR: .WORD ZP_CONST7
+    ZP_CONST8_PTR: .WORD ZP_CONST8
+    ZP_CONST9_PTR: .WORD ZP_CONST9
+    ZP_CONST10_PTR: .WORD ZP_CONST10
+
+    ZP_VAR1_PTR: .WORD ZP_VAR1
+    ZP_VAR2_PTR: .WORD ZP_VAR2
+    ZP_VAR3_PTR: .WORD ZP_VAR3
+    ZP_VAR4_PTR: .WORD ZP_VAR4
+    ZP_VAR5_PTR: .WORD ZP_VAR5
+    ZP_VAR6_PTR: .WORD ZP_VAR6
+    ZP_VAR7_PTR: .WORD ZP_VAR7
+    ZP_VAR8_PTR: .WORD ZP_VAR8
+    ZP_VAR9_PTR: .WORD ZP_VAR9
+    ZP_VAR10_PTR: .WORD ZP_VAR10
+
+; .ORG $0100 ; Stack
+
+.ORG $0200 ; NMI
+NMI
+    BRK
+
+.ORG $0300 ; IRQ / BRK
+IRQ
+    RTI              ; Return from interrupt
+
+.ORG $0400 ; IRQ / BRK
+    MEM_CONST1: .BYTE $00
+    MEM_CONST2: .BYTE $01
+    MEM_CONST3: .BYTE $FF
+    MEM_CONST4: .BYTE %10000000 ; 0x80 -> test negative flag
+    ; Additional test constants
+    MEM_CONST5: .BYTE 0d5
+    MEM_CONST6: .BYTE 0d7
+    MEM_CONST7: .BYTE 0d10
+    MEM_CONST8: .BYTE 0d50
+    MEM_CONST9: .BYTE 0d128
+    MEM_CONST10: .BYTE 0d230
+
+    MEM_VAR1: .BYTE $00
+    MEM_VAR2: .BYTE $00
+    MEM_VAR3: .BYTE $00
+    MEM_VAR4: .BYTE $00
+    MEM_VAR5: .BYTE $00
+    MEM_VAR6: .BYTE $00
+    MEM_VAR7: .BYTE $00
+    MEM_VAR8: .BYTE $00
+    MEM_VAR9: .BYTE $00
+    MEM_VAR10: .BYTE $00
+
+    MEM_CONST1_PTR: .WORD ZP_CONST1
+    MEM_CONST2_PTR: .WORD ZP_CONST2
+    MEM_CONST3_PTR: .WORD ZP_CONST3
+    MEM_CONST4_PTR: .WORD ZP_CONST4
+    ; Additional test constants
+    MEM_CONST5_PTR: .WORD ZP_CONST5
+    MEM_CONST6_PTR: .WORD ZP_CONST6
+    MEM_CONST7_PTR: .WORD ZP_CONST7
+    MEM_CONST8_PTR: .WORD ZP_CONST8
+    MEM_CONST9_PTR: .WORD ZP_CONST9
+    MEM_CONST10_PTR: .WORD ZP_CONST10
+
+    MEM_VAR1_PTR: .WORD ZP_VAR1
+    MEM_VAR2_PTR: .WORD ZP_VAR2
+    MEM_VAR3_PTR: .WORD ZP_VAR3
+    MEM_VAR4_PTR: .WORD ZP_VAR4
+    MEM_VAR5_PTR: .WORD ZP_VAR5
+    MEM_VAR6_PTR: .WORD ZP_VAR6
+    MEM_VAR7_PTR: .WORD ZP_VAR7
+    MEM_VAR8_PTR: .WORD ZP_VAR8
+    MEM_VAR9_PTR: .WORD ZP_VAR9
+    MEM_VAR10_PTR: .WORD ZP_VAR10
+
+
+.ORG $0600 ; Start address in RAM (change as needed)
+RESET
+; TODO: verify initial cpu state in verilog
+    SEI         ; Disable interrupts
+    CLD         ; Clear decimal mode
+    LDX #$FF    ; Initialize stack pointer
+    TXS
+    LDA #$00    ; Clear A register
+
+; ########## TEST CASES ##########
+TEST_LDA
+    ; Immediate (imm)
+    LDA #$01      ; Load A with 0x01 (Zero flag should be cleared)
+    LDA #$00      ; Load A with 0x00 (Zero flag should be set)
+    LDA #$FF      ; Load A with 0xFF (Negative flag should be set)
+    LDA #$80      ; Load A with 0x80 (Negative flag should be set)
+    LDA #$00      ; Load A with 0x00 (Negative flag should be cleared)
+
+    ; Zero Page (zpg)
+    LDA ZP_CONST1  ; Load A with 0x00 (Zero flag should be set)
+    LDA ZP_CONST2  ; Load A with 0x01 (Zero flag should be cleared)
+    LDA ZP_CONST3  ; Load A with 0xFF (Negative flag should be set)
+    LDA ZP_CONST4  ; Load A with 0x80 (Negative flag should be set)
+
+    ; Zero Page, X (zpg_x)
+    LDX #$02
+    LDA ZP_CONST1,X  ; Load A with ZP_CONST1 + X (= ZP_CONST3) (0xFF)
+
+    ; Absolute (abs)
+    LDA MEM_CONST1 ; Load A with 0x00 (Zero flag should be set)
+    LDA MEM_CONST2 ; Load A with 0x01 (Zero flag should be cleared)
+    LDA MEM_CONST3 ; Load A with 0xFF (Negative flag should be set)
+    LDA MEM_CONST4 ; Load A with 0x80 (Negative flag should be set)
+
+    ; Absolute, X (abs_x)
+    LDX #$01
+    LDA MEM_CONST1,X ; Load A from MEM_CONST1 + X (= MEM_CONST2) (0x01)
+
+    ; Absolute, Y (abs_y)
+    LDY #$03
+    LDA MEM_CONST1,Y ; Load A from MEM_CONST1 + Y (= MEM_CONST4) (0x01)
+
+    ; Pre-Indexed Indirect (ind_x)
+    LDX #$02
+    LDA (ZP_CONST1_PTR,X) ; Load A from address stored at ZP_CONST1_PTR + X (= ZP_CONST3) (0xFF)
+
+    ; Post-Indexed Indirect (ind_Y)
+    LDY #$06
+    LDA (ZP_CONST3_PTR),Y ; Load A from address stored at ZP_CONST3_PTR + Y (= ZP_CONST9) (0x80)
+
+TEST_STA
+    ; Zero Page (zpg)
+    STA ZP_VAR1  ; Store A to ZP_VAR1
+
+    ; Zero Page, X (zpg_x)
+    LDX #$02
+    STA ZP_VAR1,X  ; Store A to ZP_VAR1 + X
+
+    ; Absolute (abs)
+    STA MEM_VAR1 ; Store A to MEM_VAR1
+
+    ; Absolute, X (abs_x)
+    LDX #$01
+    STA MEM_VAR1,X ; Store A to MEM_VAR1 + X
+
+    ; Absolute, Y (abs_y)
+    LDY #$03
+    STA MEM_VAR1,Y ; Store A to MEM_VAR1 + Y
+
+    ; Pre-Indexed Indirect (ind_x)
+    LDX #$02
+    STA (ZP_VAR1_PTR,X) ; Store A to address stored at ZP_VAR1_PTR + X
+
+    ; Post-Indexed Indirect (ind_Y)
+    LDY #$06
+    STA (ZP_VAR3_PTR),Y ; Store A to address stored at ZP_VAR3_PTR, then add Y
+
+TEST_ADC
+    CLC ; Clear carry to ensure predictable results
+    LDA #$01
+    ADC #$01 ; A = 0x02 (Zero flag should be cleared)
+
+    LDA #$FF
+    ADC #$01 ; A = 0x00 (Zero flag should be set, Carry set)
+
+    LDA #$80
+    ADC #$80 ; A = 0x00 (Zero flag set, Carry set, Overflow set)
+
+    SEC ; Set carry
+    LDA #$01
+    ADC #$01 ; A = 0x03 (Carry-in included)
+
+    ; Zero Page (zpg)
+    CLC
+    ADC ZP_CONST1 ; Add value from zero-page address ZP_CONST1
+
+    ; Zero Page, X (zpg_x)
+    LDX #$01
+    CLC
+    ADC ZP_CONST1,X ; Add value from ZP_CONST1 + X
+
+    ; Absolute (abs)
+    CLC
+    ADC MEM_CONST1 ; Add value from absolute memory address
+
+    ; Absolute, X (abs_x)
+    LDX #$02
+    CLC
+    ADC MEM_CONST1,X ; Add value from MEM_CONST1 + X
+
+    ; Absolute, Y (abs_y)
+    LDY #$03
+    CLC
+    ADC MEM_CONST1,Y ; Add value from MEM_CONST1 + Y
+
+    ; Pre-Indexed Indirect (ind_x)
+    LDX #$02
+    CLC
+    ADC (ZP_CONST1_PTR,X) ; Add value from indirect address
+
+    ; Post-Indexed Indirect (ind_Y)
+    LDY #$06
+    CLC
+    ADC (ZP_CONST3_PTR),Y ; Add value from indirect address with offset
+
+TEST_ADC_DECIMAL
+    SED
+
+    ; BCD Addition Test
+    LDA #$25    ; Load 25 (BCD)
+    CLC         ; Clear carry
+    ADC #$37    ; Add 37 (BCD)
+    ; result (should be 62 in BCD)
+
+    LDA #$09
+    SEC
+    ADC #$09
+    ; result (should be 18, Carry0)
+
+    ; Test Carry out
+    LDA #$99    ; Load 99 (BCD)
+    CLC         ; Clear carry
+    ADC #$01    ; Add 01 (BCD), should set carry
+    ; result (should be 00, Carry=1)
+
+    ; Test Carry in
+    LDA #$99
+    SEC
+    ADC #$00
+    ; result (should be 00, Carry=1)
+
+    CLD
+
+TEST_SBC
+    SEC            ; Set carry (required for correct SBC behavior)
+    LDA #$05
+    SBC #$01       ; A = 0x04 (Zero flag should be cleared)
+
+    LDA #$01
+    SBC #$01       ; A = 0x00 (Zero flag should be set)
+
+    LDA #$00
+    SBC #$01       ; A = 0xFF (Negative flag should be set) (carry cleared due to borrow)
+
+    LDA #$80
+    SBC #$01       ; A = 0x7F (Negative flag cleared, Overflow set)
+
+    ; Zero Page (zpg)
+    SEC
+    SBC ZP_CONST1  ; Subtract value from zero-page address ZP_CONST1
+
+    ; Zero Page, X (zpg_x)
+    LDX #$01
+    SEC
+    SBC ZP_CONST1,X ; Subtract value from ZP_CONST1 + X
+
+    ; Absolute (abs)
+    SEC
+    SBC MEM_CONST1  ; Subtract value from absolute memory address
+
+    ; Absolute, X (abs_x)
+    LDX #$02
+    SEC
+    SBC MEM_CONST1,X ; Subtract value from MEM_CONST1 + X
+
+    ; Absolute, Y (abs_y)
+    LDY #$03
+    SEC
+    SBC MEM_CONST1,Y ; Subtract value from MEM_CONST1 + Y
+
+    ; Pre-Indexed Indirect (ind_x)
+    LDX #$02
+    SEC
+    SBC (ZP_CONST1_PTR,X) ; Subtract value from indirect address
+
+    ; Post-Indexed Indirect (ind_Y)
+    LDY #$06
+    SEC
+    SBC (ZP_CONST3_PTR),Y ; Subtract value from indirect address with offset
+
+TEST_SBC_DECIMAL
+    SED
+
+    ; BCD Subtraction Test
+    LDA #$62    ; Load 62 (BCD)
+    SEC         ; Set carry (required for SBC)
+    SBC #$37    ; Subtract 37 (BCD)
+    ; result (should be 25 in BCD)
+
+    ; Test Zero Flag
+    LDA #$50    ; Load 50 (BCD)
+    SEC         ; Set carry
+    SBC #$50    ; Subtract 50 (BCD), should set zero flag
+    ; result (should be 00)
+
+    ; Test Negative Flag
+    LDA #$00    ; Load 00 (BCD)
+    SEC         ; Set carry
+    SBC #$01    ; Subtract 01 (BCD), should set negative flag
+    ; result (should be 99 in BCD, carry flag should be cleared)
+
+    ; Test Carry Flag
+    LDA #$30    ; Load 30 (BCD)
+    SEC         ; Set carry
+    SBC #$40    ; Subtract 40 (BCD)
+    ; result (should be 90 in BCD, carry flag should be cleared)
+
+    LDA #$50    ; Load 50 (BCD)
+    SEC         ; Set carry
+    SBC #$30    ; Subtract 30 (BCD)
+    ; result (should be 20 in BCD, carry flag should be set)
+
+    CLD
+    
+TEST_ORA
+    ; ORA (Logical OR with Accumulator)
+    LDA #$00
+    ORA #$FF       ; A = 0xFF (All bits set)
+    ORA #$0F       ; A = 0xFF (No change, OR with lower bits set)
+    ORA #$F0       ; A = 0xFF (Still all bits set)
+
+    ; Zero Page (zpg)
+    ORA ZP_CONST1  ; OR with value from zero-page address
+
+    ; Zero Page, X (zpg_x)
+    LDX #$01
+    ORA ZP_CONST1,X
+
+    ; Absolute (abs)
+    ORA MEM_CONST1
+
+    ; Absolute, X (abs_x)
+    LDX #$02
+    ORA MEM_CONST1,X
+
+    ; Absolute, Y (abs_y)
+    LDY #$03
+    ORA MEM_CONST1,Y
+
+    ; Pre-Indexed Indirect (ind_x)
+    LDX #$02
+    ORA (ZP_CONST1_PTR,X)
+
+    ; Post-Indexed Indirect (ind_y)
+    LDY #$06
+    ORA (ZP_CONST3_PTR),Y
+
+TEST_AND
+    ; AND (Logical AND with Accumulator)
+    LDA #$FF
+    AND #$0F       ; A = 0x0F (Upper bits cleared)
+    AND #$F0       ; A = 0x00 (All bits cleared, Zero flag set)
+
+    ; Zero Page
+    AND ZP_CONST1
+
+    ; Zero Page, X
+    LDX #$01
+    AND ZP_CONST1,X
+
+    ; Absolute
+    AND MEM_CONST1
+
+    ; Absolute, X
+    LDX #$02
+    AND MEM_CONST1,X
+
+    ; Absolute, Y
+    LDY #$03
+    AND MEM_CONST1,Y
+
+    ; Pre-Indexed Indirect
+    LDX #$02
+    AND (ZP_CONST1_PTR,X)
+
+    ; Post-Indexed Indirect
+    LDY #$06
+    AND (ZP_CONST3_PTR),Y
+
+TEST_EOR
+    ; EOR (Exclusive OR with Accumulator)
+    LDA #$FF
+    EOR #$FF       ; A = 0x00 (All bits toggled, Zero flag set)
+    EOR #$0F       ; A = 0x0F (Lower bits toggled)
+    EOR #$F0       ; A = 0xFF (All bits set again)
+
+    ; Zero Page
+    EOR ZP_CONST1
+
+    ; Zero Page, X
+    LDX #$01
+    EOR ZP_CONST1,X
+
+    ; Absolute
+    EOR MEM_CONST1
+
+    ; Absolute, X
+    LDX #$02
+    EOR MEM_CONST1,X
+
+    ; Absolute, Y
+    LDY #$03
+    EOR MEM_CONST1,Y
+
+    ; Pre-Indexed Indirect
+    LDX #$02
+    EOR (ZP_CONST1_PTR,X)
+
+    ; Post-Indexed Indirect
+    LDY #$06
+    EOR (ZP_CONST3_PTR),Y
+
+TEST_CMP
+    ; CMP (Compare Accumulator)
+    LDA #$05
+    CMP #$03       ; Compare A with immediate value
+    CMP #$05       ; Should set zero flag
+    CMP #$07       ; Should clear carry flag
+
+    ; Zero Page
+    CMP ZP_CONST1
+
+    ; Zero Page, X
+    LDX #$01
+    CMP ZP_CONST1,X
+
+    ; Absolute
+    CMP MEM_CONST1
+
+    ; Absolute, X
+    LDX #$02
+    CMP MEM_CONST1,X
+
+    ; Absolute, Y
+    LDY #$03
+    CMP MEM_CONST1,Y
+
+    ; Pre-Indexed Indirect
+    LDX #$02
+    CMP (ZP_CONST1_PTR,X)
+
+    ; Post-Indexed Indirect
+    LDY #$06
+    CMP (ZP_CONST3_PTR),Y
+
+TEST_CPX
+    ; CPX (Compare X Register)
+    LDX #$05
+    CPX #$03
+    CPX #$05
+    CPX #$07
+    CPX ZP_CONST1
+    CPX MEM_CONST1
+
+TEST_CPY
+    ; CPY (Compare Y Register)
+    LDY #$05
+    CPY #$03
+    CPY #$05
+    CPY #$07
+    CPY ZP_CONST1
+    CPY MEM_CONST1
+
+TEST_LOAD_STORE
+  ; Load Y Register (LDY)
+    LDY #$00     ; Zero flag set
+    LDY #$80     ; Negative flag set
+    LDX #$01
+    LDY ZP_CONST1
+    LDY ZP_CONST1,X
+    LDY MEM_CONST1
+    LDY MEM_CONST1,X
+
+    ; Load X Register (LDX)
+    LDY #$01     ; Zero flag set
+    LDX #$00     ; Zero flag set
+    LDX #$80     ; Negative flag set
+    LDX ZP_CONST1
+    LDX ZP_CONST1,Y
+    LDX MEM_CONST1
+    LDX MEM_CONST1,Y
+
+    ; Store Y Register (STY)
+    STY ZP_CONST1
+    STY ZP_CONST1,X
+    STY MEM_CONST1
+
+    ; Store X Register (STX)
+    STX ZP_CONST1
+    STX ZP_CONST1,Y
+    STX MEM_CONST1
+
+TEST_INC_DEC
+    ; Increment and Decrement
+    INC ZP_CONST1
+    INC ZP_CONST1,X
+    INC MEM_CONST1
+    INC MEM_CONST1,X
+
+    DEC ZP_CONST1
+    DEC ZP_CONST1,X
+    DEC MEM_CONST1
+    DEC MEM_CONST1,X
+
+
+TEST_SHIFT_ROTATE
+    ; Shift and Rotate Instructions
+    ASL A
+    ASL ZP_CONST1
+    ASL ZP_CONST1,X
+    ASL MEM_CONST1
+    ASL MEM_CONST1,X
+    ROL A
+    ROL ZP_CONST1
+    ROL ZP_CONST1,X
+    ROL MEM_CONST1
+    ROL MEM_CONST1,X
+    LSR A
+    LSR ZP_CONST1
+    LSR ZP_CONST1,X
+    LSR MEM_CONST1
+    LSR MEM_CONST1,X
+    ROR A
+    ROR ZP_CONST1
+    ROR ZP_CONST1,X
+    ROR MEM_CONST1
+    ROR ZP_CONST4,X
+
+TEST_FLAGS
+    SEC         ; Set carry flag (test SEC)
+    CLC         ; Clear carry flag (test CLC)
+    SEI         ; Disable interrupts (test SEI)
+    CLI         ; Clear interrupt disable flag (test CLI)
+    SED         ; Set decimal mode (test SED, though it's ignored on some CPUs)
+    CLD         ; Clear decimal mode again (test CLD)
+    CLV         ; Clear overflow flag (test CLV)
+
+TEST_DECREMENT_REGISTER
+    LDX #$02    ; Load X with 2
+    DEX         ; Decrement X (test DEX)
+    DEX         ; Decrement X (should be 0 now, test DEX again)
+    DEX         ; Decrement X (should be $FF now, test underflow)
+
+    LDY #$03    ; Load Y with 3
+    DEY         ; Decrement Y (test DEY)
+    DEY         ; Decrement Y
+    DEY         ; Decrement Y (should be 0 now)
+    DEY         ; Decrement Y (should be $FF now, test underflow)
+
+TEST_INCREMENT_REGISTER
+    LDY #$02    ; Load Y with 2
+    INY         ; Increment Y (test INY)
+    INY         ; Increment Y (should be 4 now)
+    INY         ; Increment Y (should be 5 now)
+    INY         ; Increment Y (should be 6 now)
+
+    LDX #$03    ; Load X with 3
+    INX         ; Increment X (test INX)
+    INX         ; Increment X
+    INX         ; Increment X (should be 6 now)
+    INX         ; Increment X (should be 7 now)
+
+TEST_STACK
+    PHA         ; Push accumulator to stack (test PHA)
+    PLA         ; Pull accumulator from stack (test PLA)
+    PHP         ; Push processor status to stack (test PHP)
+    PLP         ; Pull processor status from stack (test PLP)
+
+TEST_TRANSFER
+    ; Transfer Instructions
+    TAX          ; Negative and Zero flag affected
+    TAY          ; Negative and Zero flag affected
+    TXA          ; Negative and Zero flag affected
+    TYA          ; Negative and Zero flag affected
+    TSX          ; Negative and Zero flag affected
+    TXS          ; No flags affected
+
+
+; TEST JUMP INSTRUCTIONS
+JMP TEST_JMP     ; JMP abs
+
+INDIRECT_JMP:
+    LDA #$03
+    PHA                ; Push ACC to stack
+    ; JMP ($0200)      ; Indirect jump, address must be set in RAM
+
+    BRK
+    SED              ; Set decimal mode (should be ignored)
+
+    LDA #$04
+    ; SEI              ; Disable interrupts
+    BRK              ; Cause software interrupt (should still be handled, BRK cannot be masked)
+    SED              ; Set decimal mode (should be ignored)
+    JMP JSR_TEST
+
+TEST_JMP:
+    DEY         ; Just a random instruction
+    ; prepare indirect jump address
+    LDX #<INDIRECT_JMP      ; Low byte of INDIRECT_JMP
+    LDY #>INDIRECT_JMP      ; High byte of INDIRECT_JMP
+    STX MEM_VAR1            ; Store low byte at MEM_VAR1
+    STY MEM_VAR1+1          ; Store high byte at MEM_VAR1+1
+    JMP (MEM_VAR1)          ; Indirect jump to INDIRECT_JMP
+
+SUBROUTINE:
+    INX          ; Increment X (should change X to 1)
+    RTS          ; Return from subroutine
+
+JSR_TEST:
+    JSR SUBROUTINE  ; Call the subroutine
+    LDA #$05
+    BRK
+    .BYTE 0x10 ; Break marker (skipped)
+
+; Test Branches
+TEST_BRANCHES
+TEST_BPL
+    LDA #$FF
+    BPL TEST_BRANCHES ; N=1 -> no branch
+    LDA #$01
+    BPL TEST_BMI ; N=0 -> branch
+
+TEST_BMI
+    LDA #$01
+    BMI TEST_BRANCHES ; N=0 -> no branch
+    LDA #$FF
+    BMI TEST_BVC ; N=1 -> branch
+
+TEST_BVC
+    LDA #$40
+    ADC #$40   ; overflow
+    BVC TEST_BRANCHES ; V=1 -> no branch
+    LDA #$40
+    ADC #$01   ; no overflow
+    BVC TEST_BVS ; V=0 -> branch
+
+TEST_BVS
+    LDA #$40
+    ADC #$01   ; no overflow
+    BVS TEST_BRANCHES ; V=0 -> no branch
+    LDA #$40
+    ADC #$40   ; overflow
+    BVS TEST_BCC ; V=1 -> branch
+
+TEST_BCC
+    SEC
+    BCC TEST_BRANCHES ; C=1 -> no branch
+    CLC
+    BCC TEST_BCS ; C=0 -> branch
+
+TEST_BCS
+    CLC
+    BCS TEST_BRANCHES ; C=0 -> no branch
+    SEC
+    BCS TEST_BNE ; C=1 -> branch
+
+TEST_BNE
+    LDA #$00   ; Load A with 0
+    BNE TEST_BRANCHES ; Z=1 -> no branch
+    LDA #$01   ; Load A with 1
+    BNE TEST_BEQ ; Z=0 -> branch
+
+TEST_BEQ
+    LDA #$01   ; Load A with 1
+    BEQ TEST_BRANCHES ; Z=0 -> no branch
+    LDA #$00   ; Load A with 0
+    BEQ END_BRANCH_TESTS ; Z=1 -> branch
+
+; Skipped start
+SEC
+CLC
+SED
+; Skipped end
+
+
+
+END_BRANCH_TESTS:
+    LDA #$00
+    BIT MEM_CONST1 ; A & $FF = 0 -> Z should be set
+    LDA #$01
+    BIT MEM_CONST1 ; A & $FF != 0 -> Z should be cleared
+
+    BIT MEM_CONST4 ; 0x80 -> N flag should be set
+    BIT MEM_CONST1 ; 0x00 -> N flag should be cleared
+    BIT MEM_CONST3 ; 0xFF -> N flag should be set
+
+    LDX %01000000 ; 0x40 -> X should be 0x40
+    STX MEM_VAR1
+    BIT MEM_VAR1 ; 0x40 -> V flag should be set
+
+    LDX %10111111 ; 0xBF -> X should be 0xBF
+    STX MEM_VAR1
+    BIT MEM_VAR1 ; 0x40 -> V flag should be cleared
+
+
+    .BYTE 0x04 ; Invalid Instruction indicating program end -> stops testbench

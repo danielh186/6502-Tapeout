@@ -1,0 +1,2 @@
+read_verilog -sv top.v include.v cpu.v
+synth_ecp5 -json 6502.json
