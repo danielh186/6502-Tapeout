@@ -1,15 +1,17 @@
 set IO_LENGTH 180
 set BONDPAD_SIZE 70
-set macro_extension 1
+set SEALRING_OFFSET 70
 # sg13g2_io.lef defines sg13g2_ioSite for the sides, but no corner site
-make_fake_io_site -name sg13g2_ioCSite -width $IO_LENGTH -height $IO_LENGTH
+make_fake_io_site -name IOLibSite -width 1 -height $IO_LENGTH
+make_fake_io_site -name IOLibCSite -width $IO_LENGTH -height $IO_LENGTH
 
+set IO_OFFSET [expr {$BONDPAD_SIZE + $SEALRING_OFFSET}]
 # Create IO Rows
 make_io_sites \
-    -horizontal_site sg13g2_ioSite \
-    -vertical_site sg13g2_ioSite \
-    -corner_site sg13g2_ioCSite \
-    -offset $BONDPAD_SIZE
+    -horizontal_site IOLibSite \
+    -vertical_site IOLibSite \
+    -corner_site IOLibCSite \
+    -offset $IO_OFFSET
 
 ######## Place Pads ########
 place_pads -row IO_NORTH \

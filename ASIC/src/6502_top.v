@@ -89,52 +89,52 @@ module cpu_top(
 
 
 (* keep *) sg13g2_IOPadInOut4mA u_pad_data_0 (
-    .pad    (data_0          ), //~
-    .c2p    (data_in_phy_0   ), //i
-    .c2p_en (rw_phy          ), //i
-    .p2c    (data_out_phy_0  ) //o
+    .pad    (data_0          ),
+    .c2p    (data_out_phy_0   ),
+    .c2p_en (~rw_phy          ),
+    .p2c    (data_in_phy_0  )
 );
 (* keep *) sg13g2_IOPadInOut4mA u_pad_data_1 (
-    .pad    (data_1          ), //~
-    .c2p    (data_in_phy_1   ), //i
-    .c2p_en (rw_phy          ), //i
-    .p2c    (data_out_phy_1  )  //o
+    .pad    (data_1          ),
+    .c2p    (data_out_phy_1   ),
+    .c2p_en (~rw_phy          ),
+    .p2c    (data_in_phy_1  )
 );
 (* keep *) sg13g2_IOPadInOut4mA u_pad_data_2 (
-    .pad    (data_2          ), //~
-    .c2p    (data_in_phy_2   ), //i
-    .c2p_en (rw_phy          ), //i
-    .p2c    (data_out_phy_2  )  //o
+    .pad    (data_2          ),
+    .c2p    (data_out_phy_2   ),
+    .c2p_en (~rw_phy          ),
+    .p2c    (data_in_phy_2  )
 );
 (* keep *) sg13g2_IOPadInOut4mA u_pad_data_3 (
-    .pad    (data_3          ), //~
-    .c2p    (data_in_phy_3   ), //i
-    .c2p_en (rw_phy          ), //i
-    .p2c    (data_out_phy_3  )  //o
+    .pad    (data_3          ),
+    .c2p    (data_out_phy_3   ),
+    .c2p_en (~rw_phy          ),
+    .p2c    (data_in_phy_3  )
 );
 (* keep *) sg13g2_IOPadInOut4mA u_pad_data_4 (
-    .pad    (data_4          ), //~
-    .c2p    (data_in_phy_4   ), //i
-    .c2p_en (rw_phy          ), //i
-    .p2c    (data_out_phy_4  )  //o
+    .pad    (data_4          ),
+    .c2p    (data_out_phy_4   ),
+    .c2p_en (~rw_phy          ),
+    .p2c    (data_in_phy_4  )
 );
 (* keep *) sg13g2_IOPadInOut4mA u_pad_data_5 (
-    .pad    (data_5          ), //~
-    .c2p    (data_in_phy_5   ), //i
-    .c2p_en (rw_phy          ), //i
-    .p2c    (data_out_phy_5  )  //o
+    .pad    (data_5          ),
+    .c2p    (data_out_phy_5   ),
+    .c2p_en (~rw_phy          ),
+    .p2c    (data_in_phy_5  )
 );
 (* keep *) sg13g2_IOPadInOut4mA u_pad_data_6 (
-    .pad    (data_6          ), //~
-    .c2p    (data_in_phy_6   ), //i
-    .c2p_en (rw_phy          ), //i
-    .p2c    (data_out_phy_6  )  //o
+    .pad    (data_6          ),
+    .c2p    (data_out_phy_6   ),
+    .c2p_en (~rw_phy          ),
+    .p2c    (data_in_phy_6  )
 );
 (* keep *) sg13g2_IOPadInOut4mA u_pad_data_7 (
-    .pad    (data_7          ), //~
-    .c2p    (data_in_phy_7   ), //i
-    .c2p_en (rw_phy          ), //i
-    .p2c    (data_out_phy_7  )  //o
+    .pad    (data_7          ),
+    .c2p    (data_out_phy_7   ),
+    .c2p_en (~rw_phy          ),
+    .p2c    (data_in_phy_7  )
 );
 
 // (* keep *) sg13g2_IOPadOut4mA u_pad_addr (.pad(addr), .c2p(addr_phy)); // 16 bit bus

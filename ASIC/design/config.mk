@@ -11,8 +11,8 @@ export SDC_FILE = $(DESIGN_HOME)/$(PLATFORM)/$(DESIGN_NICKNAME)/constraint.sdc
 export FOOTPRINT_TCL = $(DESIGN_HOME)/$(PLATFORM)/$(DESIGN_NICKNAME)/footprint.tcl
 export SEAL_GDS = ./designs/$(PLATFORM)/$(DESIGN_NICKNAME)/sealring.gds
 
-export DIE_AREA  =   0   0 1780 690
-export CORE_AREA = 270 270 1510 420
+export DIE_AREA  =   0   0 1970 880
+export CORE_AREA = 400 400 1570 480
 
 
 # I/O pads: 180um
@@ -32,7 +32,7 @@ export CORE_AREA = 270 270 1510 420
 
 # Generate sealring:
     # The sealring has to be roughly 120um larger than the DIE_AREA in both directions.
-    # klayout -n sg13g2 -zz -r ~/IHP-Open-PDK/ihp-sg13g2/libs.tech/klayout/tech/scripts/sealring.py -rd width=810 -rd height=1900 -rd output=sealring.gds
+    # klayout -n sg13g2 -zz -r ~/IHP-Open-PDK/ihp-sg13g2/libs.tech/klayout/tech/scripts/sealring.py -rd width=880 -rd height=1970 -rd output=sealring.gds
 
 # Move sealring:
     # The sealring has to be moved to postition -60, -60 in klayout for it to be centered in the final design.
@@ -51,6 +51,8 @@ export CORE_AREA = 270 270 1510 420
 # Run DRCs with klayout
     # This will take a while, you might want to pipe the output into a file
     # klayout -n sg13g2 -zz -r $PDK_ROOT/ihp-sg13g2/libs.tech/klayout/tech/drc/sg13g2_maximal.lydrc -rd in_gds=6_final.gds -rd cell=cpu_top -rd report_file=~/maximal_db_drc.lyrdb
+    # klayout -n sg13g2 -b -r $PDK_ROOT/ihp-sg13g2/libs.tech/klayout/tech/drc/sg13g2_maximal.lydrc -rd cell=cpu_top -rd recommendedRules=false -rd report_file=~/maximal_db_drc.lyrdb -rd in_gds=6_final.gds
+
 
     # Double check that there are no critical DRCs.
         # You can get more detail on the DRCs by opening the `6_final.gds` in klayout.
